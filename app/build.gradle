@@ -4,6 +4,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlinx-serialization'
 
 def versionMajor = 2
 def versionMinor = 4
@@ -178,6 +179,7 @@ afterEvaluate {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.21"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 
     // Jetpack
     implementation(
@@ -204,10 +206,12 @@ dependencies {
         exclude module: 'httpclient'
     }
 
-    implementation 'org.jraf:android-switch-backport:2.0.1@aar'
-    implementation 'com.github.nextcloud:android-library:1.0.31'
-    implementation 'com.squareup:android-times-square:1.6.5@aar'
     implementation 'com.github.PhilJay:MPAndroidChart:2.2.4'
+    implementation 'com.github.nextcloud:android-library:1.0.31'
+    implementation 'com.squareup.okhttp3:okhttp-coroutines:5.0.0-alpha.12'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.12'
+    implementation 'com.squareup:android-times-square:1.6.5@aar'
+    implementation 'org.jraf:android-switch-backport:2.0.1@aar'
 
     implementation 'joda-time:joda-time:2.9.4'
     implementation 'org.apache.jackrabbit:jackrabbit-webdav:2.13.3'
@@ -225,6 +229,10 @@ dependencies {
 
 def androidEspressoVersion = "3.5.1"
 dependencies {
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    androidTestImplementation 'androidx.annotation:annotation-experimental:1.3.0'
     //the following are only added so that the app and test version both us the same versions
     androidTestImplementation 'com.google.android.material:material:1.11.0'
 

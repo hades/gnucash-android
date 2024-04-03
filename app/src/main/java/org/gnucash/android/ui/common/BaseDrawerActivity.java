@@ -53,6 +53,7 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
+import org.gnucash.android.ui.syncable.SyncableLinkActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 import org.gnucash.android.util.BookUtils;
 
@@ -244,6 +245,14 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity {
                     .setType("text/*|application/*")
                     .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
                 startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
+            }
+            break;
+
+            case R.id.nav_item_link: {
+                Intent intent = new Intent(this, SyncableLinkActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
             break;
 
