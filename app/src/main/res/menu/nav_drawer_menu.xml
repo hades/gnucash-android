@@ -20,7 +20,6 @@
         android:title="@string/nav_menu_open" />
     <item
         android:id="@+id/nav_item_link"
-        android:icon="@drawable/ic_folder_open_black_24dp"
         android:title="@string/nav_menu_link" />
     <item
         android:id="@+id/nav_section_accounts"

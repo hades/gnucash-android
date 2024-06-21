@@ -45,6 +45,13 @@
                      android:label="Export and backup to 3rd party hosting services" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.CAMERA"
+                     android:label="Scan a QR code to pair desktop finance apps." />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false"/>
+
     <application
         android:name=".app.GnuCashApplication"
         android:allowBackup="true"
