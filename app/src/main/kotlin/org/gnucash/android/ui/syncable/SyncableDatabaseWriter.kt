@@ -38,7 +38,7 @@ class SyncableDatabaseWriter {
                     if (insertedAccounts.contains(account.parent)) {
                         val model = Account(account.name)
                         model.uID = account.guid
-                        model.setParentUID(account.parent)
+                        model.parentUID = account.parent
                         Log.i(TAG, "Inserting account ${account.guid}")
                         accountsAdapter.addRecord(model, DatabaseAdapter.UpdateMethod.insert)
                         insertedAccounts.add(account.guid)
