@@ -37,7 +37,7 @@ class SyncableLinkActivity : ComponentActivity() {
         val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             viewModel.cameraPermissionRequestComplete(isGranted)
         }
-        ensureCameraPermissions(requestPermissionLauncher)
+        ensureCameraPermissions(requestPermissionLauncher, viewModel)
         setContent {
             val state = viewModel.uiState.collectAsState()
             Scaffold(
@@ -55,9 +55,12 @@ class SyncableLinkActivity : ComponentActivity() {
         }
     }
 
-    private fun ensureCameraPermissions(requestPermissionLauncher: ActivityResultLauncher<String>) {
+    private fun ensureCameraPermissions(
+        requestPermissionLauncher: ActivityResultLauncher<String>,
+        viewModel: SyncableLinkViewModel
+    ) {
         when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> return
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> viewModel.cameraPermissionRequestComplete(true)
             else -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
