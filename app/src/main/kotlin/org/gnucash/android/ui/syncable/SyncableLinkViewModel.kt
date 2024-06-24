@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.fzakaria.ascii85.Ascii85
 import com.google.crypto.tink.BinaryKeysetReader
 import com.google.crypto.tink.CleartextKeysetHandle
+import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,9 +43,5 @@ class SyncableLinkViewModel() : ViewModel() {
             Timber.e("malformed data: %s", data)
             return
         }
-        val keyEncoded = data[2]
-        val keyBinary = Base64.decode(keyEncoded, Base64.DEFAULT)
-        val key = CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(keyBinary))
-        Timber.d("key info: %s", key.keysetInfo)
     }
 }
