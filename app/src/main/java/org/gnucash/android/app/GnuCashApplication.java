@@ -15,6 +15,8 @@
  */
 package org.gnucash.android.app;
 
+import static com.google.crypto.tink.hybrid.HpkeProtoSerialization.register;
+
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -30,6 +32,7 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import com.google.crypto.tink.hybrid.HybridConfig;
 import com.google.firebase.FirebaseApp;
 import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
@@ -57,6 +60,7 @@ import org.gnucash.android.util.CrashlyticsTree;
 import org.gnucash.android.util.LogTree;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -140,6 +144,12 @@ public class GnuCashApplication extends Application {
         setDefaultCurrencyCode(context, getDefaultCurrencyCode());
 
         StethoUtils.install(this);
+
+        try {
+            HybridConfig.register();
+        } catch (GeneralSecurityException e) {
+            Timber.e(e, "unable to register Tink crypto library");
+        }
     }
 
     @Override
