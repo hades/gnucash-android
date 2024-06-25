@@ -1,7 +1,7 @@
 package org.gnucash.android.syncable
 
 sealed class TransportOption {
-    class Http(val hostport: String);
+    class Http(val hostport: String): TransportOption()
 }
 
 data class InviteData(

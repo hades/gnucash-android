@@ -1,24 +1,19 @@
 package org.gnucash.android.ui.syncable
 
-import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.fzakaria.ascii85.Ascii85
-import com.google.crypto.tink.BinaryKeysetReader
-import com.google.crypto.tink.CleartextKeysetHandle
-import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import org.gnucash.android.syncable.ConnectionManager
+import org.gnucash.android.syncable.InviteData
+import org.gnucash.android.syncable.TransportOption
 import timber.log.Timber
 
 sealed class SyncableLinkStage {
-    object WaitingForCameraPermission : SyncableLinkStage()
-    object Scanning : SyncableLinkStage()
-    class Confirming: SyncableLinkStage()
-    class Failed(val message: String): SyncableLinkStage()
+    data object WaitingForCameraPermission : SyncableLinkStage()
+    data object Scanning : SyncableLinkStage()
+    data object Confirming: SyncableLinkStage()
+    data class Failed(val message: String): SyncableLinkStage()
 }
 
 data class SyncableLinkUiState (
@@ -28,6 +23,8 @@ data class SyncableLinkUiState (
 class SyncableLinkViewModel() : ViewModel() {
     private val _uiState = MutableStateFlow(SyncableLinkUiState(SyncableLinkStage.WaitingForCameraPermission))
     val uiState: StateFlow<SyncableLinkUiState> = _uiState
+
+    private val manager = ConnectionManager(viewModelScope)
 
     fun cameraPermissionRequestComplete(granted: Boolean) {
         if (granted) {
@@ -41,7 +38,14 @@ class SyncableLinkViewModel() : ViewModel() {
         val data = encodedData.split(';', ignoreCase = false, limit = 3)
         if (data.size < 3) {
             Timber.e("malformed data: %s", data)
+            _uiState.value = SyncableLinkUiState(SyncableLinkStage.Failed("malformed QR code data"))
             return
         }
+        if (data[0] != "0") {
+            _uiState.value = SyncableLinkUiState(SyncableLinkStage.Failed("malformed QR code data"))
+            return
+        }
+        val invite = InviteData(data[0].toInt(), data[1].split(',').map { TransportOption.Http(it) }, data[2])
+        manager.acceptInvite(invite)
     }
 }
