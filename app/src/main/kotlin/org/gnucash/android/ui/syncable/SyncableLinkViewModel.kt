@@ -4,7 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import org.gnucash.android.syncable.Connection
 import org.gnucash.android.syncable.ConnectionManager
+import org.gnucash.android.syncable.ConnectionState
 import org.gnucash.android.syncable.InviteData
 import org.gnucash.android.syncable.TransportOption
 import timber.log.Timber
@@ -25,6 +30,7 @@ class SyncableLinkViewModel() : ViewModel() {
     val uiState: StateFlow<SyncableLinkUiState> = _uiState
 
     private val manager = ConnectionManager(viewModelScope)
+    private var connection: Connection? = null
 
     fun cameraPermissionRequestComplete(granted: Boolean) {
         if (granted) {
@@ -46,6 +52,15 @@ class SyncableLinkViewModel() : ViewModel() {
             return
         }
         val invite = InviteData(data[0].toInt(), data[1].split(',').map { TransportOption.Http(it) }, data[2])
-        manager.acceptInvite(invite)
+        connection = manager.acceptInvite(invite)
+        viewModelScope.launch {
+            manager.getState(connection!!).collectLatest {
+                when (it) {
+                    ConnectionState.Established -> _uiState.value = SyncableLinkUiState(SyncableLinkStage.Confirming)
+                    is ConnectionState.Failed -> _uiState.value = SyncableLinkUiState(SyncableLinkStage.Failed(it.message))
+                    ConnectionState.Pending -> _uiState.value = SyncableLinkUiState(SyncableLinkStage.Confirming)
+                }
+            }
+        }
     }
 }

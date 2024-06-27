@@ -8,20 +8,38 @@ import com.google.crypto.tink.KeysetHandle
 import com.google.crypto.tink.hybrid.PredefinedHybridParameters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
-data class Connection(private val remoteId: Int)
+data class Connection(val remoteId: Int)
+
+sealed class ConnectionState {
+    data object Pending : ConnectionState()
+    data object Established : ConnectionState()
+    data class Failed(val message: String) : ConnectionState()
+}
 
 class ConnectionManager(private val scope: CoroutineScope) {
+    private val states: MutableMap<Int, MutableStateFlow<ConnectionState>> = mutableMapOf()
+
+    fun getState(connection: Connection): StateFlow<ConnectionState> = when (val state = states[connection.remoteId]) {
+        null -> throw IllegalArgumentException("requested connection state not available")
+        else -> state.asStateFlow()
+    }
 
     fun acceptInvite(invite: InviteData): Connection {
         val keyBinary = Base64.decode(invite.publicKeyBase64, Base64.DEFAULT)
         val key = CleartextKeysetHandle.read(BinaryKeysetReader.withBytes(keyBinary))
         val remoteId = key.keysetInfo.primaryKeyId
+        states[remoteId] = MutableStateFlow(ConnectionState.Pending)
         scope.launch {
             createConnection(key, invite.transportOptions[0])
+            states[remoteId]?.update { ConnectionState.Established }
         }
         return Connection(remoteId)
     }
