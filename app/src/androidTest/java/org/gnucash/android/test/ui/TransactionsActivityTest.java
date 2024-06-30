@@ -240,14 +240,13 @@ public class TransactionsActivityTest {
 
 
     private void validateEditTransactionFields(Transaction transaction) {
-
         onView(withId(R.id.input_transaction_name)).check(matches(withText(transaction.getDescription())));
 
         Money balance = transaction.getBalance(TRANSACTIONS_ACCOUNT_UID);
         NumberFormat formatter = NumberFormat.getInstance(Locale.getDefault());
         formatter.setMinimumFractionDigits(2);
         formatter.setMaximumFractionDigits(2);
-        onView(withId(R.id.input_transaction_amount)).check(matches(withText(formatter.format(balance.toDouble()))));
+        onView(withId(R.id.input_transaction_amount)).check(matches(withText(formatter.format(balance.getAmount()))));
         onView(withId(R.id.input_date)).check(matches(withText(TransactionFormFragment.DATE_FORMATTER.print(transaction.getTimeMillis()))));
         onView(withId(R.id.input_time)).check(matches(withText(TransactionFormFragment.TIME_FORMATTER.print(transaction.getTimeMillis()))));
         onView(withId(R.id.input_description)).check(matches(withText(transaction.getNote())));
@@ -671,7 +670,7 @@ public class TransactionsActivityTest {
         for (Transaction transaction : transactions) {
             if (transaction.getDescription().equals("Power intents")) {
                 assertThat("Intents for sale").isEqualTo(transaction.getNote());
-                assertThat(4.99).isEqualTo(transaction.getBalance(TRANSACTIONS_ACCOUNT_UID).toDouble());
+                assertThat(BigDecimal.valueOf(499, 2)).isEqualTo(transaction.getBalance(TRANSACTIONS_ACCOUNT_UID).getAmount());
             }
         }
     }

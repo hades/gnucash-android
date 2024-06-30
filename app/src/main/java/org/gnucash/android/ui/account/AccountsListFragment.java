@@ -548,7 +548,7 @@ public class AccountsListFragment extends Fragment implements
             if (budgets.size() == 1) {
                 Budget budget = budgets.get(0);
                 Money balance = mAccountsDbAdapter.getAccountBalance(accountUID, budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
-                double budgetProgress = balance.div(budget.getAmount(accountUID)).asBigDecimal().doubleValue() * 100;
+                double budgetProgress = balance.div(budget.getAmount(accountUID)).doubleValue() * 100;
 
                 holder.binding.budgetIndicator.setVisibility(View.VISIBLE);
                 holder.binding.budgetIndicator.setProgress((int) budgetProgress);

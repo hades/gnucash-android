@@ -100,16 +100,10 @@ public class MoneyTest {
 
     @Test
     public void testMultiplication() {
-        Money result = mMoneyInEur.times(new Money(BigDecimal.TEN, Commodity.getInstance(CURRENCY_CODE)));
+        Money result = mMoneyInEur.times(BigDecimal.TEN);
         assertThat("157.50").isEqualTo(result.toPlainString());
         assertThat(result).isNotEqualTo(mMoneyInEur);
         validateImmutability();
-    }
-
-    @Test(expected = Money.CurrencyMismatchException.class)
-    public void testMultiplicationWithDifferentCurrencies() {
-        Money other = new Money("4", "USD");
-        mMoneyInEur.times(other);
     }
 
     @Test
@@ -153,8 +147,7 @@ public class MoneyTest {
 
     @Test
     public void testPrinting() {
-        assertEquals(mMoneyInEur.asString(), mMoneyInEur.toPlainString());
-        assertEquals(amountString, mMoneyInEur.asString());
+        assertEquals(amountString, mMoneyInEur.toPlainString());
 
         // the unicode for Euro symbol is \u20AC
 
@@ -165,10 +158,6 @@ public class MoneyTest {
         symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMANY);
         String actualOuputUS = mMoneyInEur.formattedString(Locale.US);
         assertThat(actualOuputUS).isEqualTo(symbol + "15.75");
-
-        //always prints with 2 decimal places only
-        Money some = new Money("9.7469", CURRENCY_CODE);
-        assertEquals("9.75", some.asString());
     }
 
     public void validateImmutability() {

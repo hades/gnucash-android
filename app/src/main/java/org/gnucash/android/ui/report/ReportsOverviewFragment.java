@@ -185,10 +185,10 @@ public class ReportsOverviewFragment extends BaseReportFragment {
 
                 long start = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
                 long end = new LocalDate().plusDays(1).toDate().getTime();
-                double balance = mAccountsDbAdapter.getAccountsBalance(
-                        Collections.singletonList(account.getUID()), start, end).toDouble();
+                float balance = mAccountsDbAdapter.getAccountsBalance(
+                        Collections.singletonList(account.getUID()), start, end).getAmount().floatValue();
                 if (balance > 0) {
-                    dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                    dataSet.addEntry(new Entry(balance, dataSet.getEntryCount()));
                     colors.add(account.getColor() != Account.DEFAULT_COLOR
                             ? account.getColor()
                             : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);

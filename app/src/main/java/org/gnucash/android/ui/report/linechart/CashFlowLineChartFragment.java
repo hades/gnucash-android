@@ -262,7 +262,7 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
                     earliest = earliest.plusYears(1);
                     break;
             }
-            float balance = mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).toFloat();
+            float balance = mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).getAmount().floatValue();
             values.add(new Entry(balance, i + xAxisOffset));
             Timber.d(accountType + earliest.toString(" MMM yyyy") + ", balance = " + balance);
         }
