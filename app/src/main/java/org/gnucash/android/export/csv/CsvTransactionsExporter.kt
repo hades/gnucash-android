@@ -29,7 +29,7 @@ import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
 import java.io.FileWriter
 import java.io.IOException
-import java.util.Arrays
+import java.text.NumberFormat
 
 /**
  * Creates a GnuCash CSV transactions representation of the accounts and transactions
@@ -95,7 +95,8 @@ class CsvTransactionsExporter(context: Context,
             } else {
                 writer.writeToken(null)
             }
-            writer.writeEndToken(split.quantity!!.div(split.value!!).formattedStringWithoutSymbol())
+            val ratio = split.quantity!!.div(split.value!!)
+            writer.writeEndToken(NumberFormat.getNumberInstance().format(ratio))
         }
     }
 

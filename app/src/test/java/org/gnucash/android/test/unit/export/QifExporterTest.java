@@ -54,6 +54,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.zip.ZipFile;
 
@@ -319,7 +320,7 @@ public class QifExporterTest extends BookHelperTest {
         SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(mDb);
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(mDb, splitsDbAdapter);
         Transaction transaction = new Transaction("One transaction");
-        Split split1 = new Split(new Money(123.45, Commodity.EUR), account1.getUID());
+        Split split1 = new Split(new Money(BigDecimal.valueOf(12345, 2), Commodity.EUR), account1.getUID());
         Split split2 = split1.createPair(account2.getUID());
         split2.setAccountUID(account2.getUID());
         transaction.addSplit(split1);

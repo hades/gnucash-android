@@ -58,6 +58,7 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
@@ -213,7 +214,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             holder.binding.budgetLeft.setText(projectedAmount.minus(spentAmount.abs()).formattedString());
 
             double budgetProgress = 0;
-            if (projectedAmount.toDouble() != 0) {
+            if (!projectedAmount.isAmountZero()) {
                 budgetProgress = spentAmount.asBigDecimal().divide(projectedAmount.asBigDecimal(),
                         spentAmount.getCommodity().getSmallestFractionDigits(),
                         RoundingMode.HALF_EVEN).doubleValue();
@@ -277,7 +278,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
 
             barChart.setData(barData);
             barChart.getAxisLeft().addLimitLine(limitLine);
-            BigDecimal maxValue = budgetAmount.getAmount().plus(budgetAmount.getAmount().times(0.2)).asBigDecimal();
+            BigDecimal maxValue = budgetAmount.getAmount().asBigDecimal().multiply(BigDecimal.valueOf(12, 1));
             barChart.getAxisLeft().setAxisMaxValue(maxValue.floatValue());
             barChart.animateX(1000);
             barChart.setAutoScaleMinMaxEnabled(true);

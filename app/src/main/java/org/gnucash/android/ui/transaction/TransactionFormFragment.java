@@ -650,7 +650,7 @@ public class TransactionFormFragment extends Fragment implements
         if (enteredAmount == null) enteredAmount = BigDecimal.ZERO;
         String baseCurrencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
         Money value = new Money(enteredAmount, Commodity.getInstance(baseCurrencyCode));
-        Money quantity = new Money(value);
+        Money quantity = value;
 
         String transferAcctUID = getTransferAccountUID();
         CommoditiesDbAdapter cmdtyDbAdapter = CommoditiesDbAdapter.getInstance();
@@ -665,7 +665,7 @@ public class TransactionFormFragment extends Fragment implements
 
             if (pricePair.first > 0 && pricePair.second > 0) {
                 quantity = quantity.times(pricePair.first.intValue())
-                        .div(pricePair.second.intValue())
+                        .div(pricePair.second)
                         .withCurrency(cmdtyDbAdapter.getRecord(targetCmdtyUID));
             }
         }

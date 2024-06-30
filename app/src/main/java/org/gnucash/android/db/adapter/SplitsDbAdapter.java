@@ -33,6 +33,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.MoneyKt;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.util.TimestampHelper;
@@ -252,7 +253,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                         // no price exists, just ignore it
                         continue;
                     }
-                    BigDecimal amount = Money.getBigDecimal(amount_num, amount_denom);
+                    BigDecimal amount = MoneyKt.bigDecimalOfFraction(amount_num, amount_denom);
                     BigDecimal amountConverted = amount.multiply(new BigDecimal(price.first))
                             .divide(new BigDecimal(price.second), commodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
                     total = total.plus(new Money(amountConverted, commodity));

@@ -97,7 +97,7 @@ class Split : BaseModel, Parcelable {
      * as both the value and the quantity of this split.
      * @param accountUID String UID of owning account
      */
-    constructor(amount: Money, accountUID: String?) : this(amount, Money(amount), accountUID) {}
+    constructor(amount: Money, accountUID: String?) : this(amount, amount, accountUID) {}
 
     /**
      * Clones the `sourceSplit` to create a new instance with same fields
@@ -111,8 +111,8 @@ class Split : BaseModel, Parcelable {
         accountUID = sourceSplit.accountUID
         type = sourceSplit.type
         transactionUID = sourceSplit.transactionUID
-        value = Money(sourceSplit.value!!)
-        _quantity = Money(sourceSplit._quantity!!)
+        value = sourceSplit.value!!
+        _quantity = sourceSplit._quantity!!
 
         //todo: clone reconciled status
         if (generateUID) {

@@ -159,10 +159,10 @@ public class PieChartFragment extends BaseReportFragment {
                     && !account.isPlaceholderAccount()
                     && account.getCommodity().equals(mCommodity)) {
 
-                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
-                        mReportPeriodStart, mReportPeriodEnd).toDouble();
+                float balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
+                        mReportPeriodStart, mReportPeriodEnd).getAmount().floatValue();
                 if (balance > 0) {
-                    dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                    dataSet.addEntry(new Entry(balance, dataSet.getEntryCount()));
                     int color;
                     if (mUseAccountColor) {
                         color = (account.getColor() != Account.DEFAULT_COLOR)
