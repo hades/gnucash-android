@@ -15,6 +15,9 @@
  */
 package org.gnucash.android.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Ignore
+import org.gnucash.android.db.DatabaseSchema.CommonColumns
 import org.gnucash.android.util.TimestampHelper
 import java.sql.Timestamp
 import java.util.UUID
@@ -33,11 +36,16 @@ abstract class BaseModel {
      * @see .getUID
      * @see .setUID
      */
-    private var _uid: String? = null
+    @ColumnInfo(name = CommonColumns.COLUMN_UID)
+    var _uid: String? = null
 
     /**
      * The timestamp when this model entry was created in the database.
      */
+    @ColumnInfo(
+            name = CommonColumns.COLUMN_CREATED_AT,
+            defaultValue = "CURRENT_TIMESTAMP",
+            )
     var createdTimestamp: Timestamp = TimestampHelper.getTimestampFromNow()
 
     /**
@@ -48,6 +56,10 @@ abstract class BaseModel {
      * <br />In that case, it has to be explicitly set in the SQL statement.
      *
      */
+    @ColumnInfo(
+            name = CommonColumns.COLUMN_MODIFIED_AT,
+            defaultValue = "CURRENT_TIMESTAMP",
+            )
     var modifiedTimestamp: Timestamp = TimestampHelper.getTimestampFromNow()
 
     /**

@@ -16,6 +16,10 @@
 package org.gnucash.android.model
 
 import android.net.Uri
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import org.gnucash.android.db.DatabaseSchema.BookEntry
 import java.sql.Timestamp
 
 /**
@@ -23,7 +27,12 @@ import java.sql.Timestamp
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
+@Entity
 class Book : BaseModel {
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = BookEntry._ID)
+    var id: Long = 0
+
     /**
      * The Uri of the GnuCash XML source for the book
      *
@@ -32,6 +41,7 @@ class Book : BaseModel {
      *
      * This Uri will be used for sync where applicable
      */
+    @ColumnInfo(name = BookEntry.COLUMN_SOURCE_URI)
     var sourceUri: Uri? = null
 
     /**
@@ -42,41 +52,44 @@ class Book : BaseModel {
      *
      * @return Name of the book
      */
-    var displayName: String? = null
+    @ColumnInfo(name = BookEntry.COLUMN_DISPLAY_NAME)
+    var displayName: String = ""
 
     /**
      * The root account GUID of this book
      *
      * Each book has only one root account
-     *
-     * @param rootAccountUID GUID of the book root account
      */
-    var rootAccountUID: String? = null
+    @ColumnInfo(name = BookEntry.COLUMN_ROOT_GUID)
+    var rootAccountUID: String = ""
 
     /**
      * The GUID of the root template account
      */
-    var rootTemplateUID: String? = null
+    @ColumnInfo(name = BookEntry.COLUMN_TEMPLATE_GUID)
+    var rootTemplateUID: String? = generateUID()
 
     /**
      * `true` if this book is the currently active book in the app, `false` otherwise.
      *
      * An active book is one whose data is currently displayed in the UI
      */
+    @ColumnInfo(name = BookEntry.COLUMN_ACTIVE)
     var isActive = false
 
     /**
      * The time of last synchronization of the book
-     *
-     * @param lastSync Timestamp of last synchronization
      */
-    var lastSync: Timestamp? = null
+    @ColumnInfo(
+            name = BookEntry.COLUMN_LAST_SYNC,
+            defaultValue = "CURRENT_TIMESTAMP"
+            )
+    var lastSync: Timestamp = Timestamp(System.currentTimeMillis())
 
     /**
      * Default constructor
      */
     constructor() {
-        init()
     }
 
     /**
@@ -84,16 +97,7 @@ class Book : BaseModel {
      *
      * @param rootAccountUID GUID of root account
      */
-    constructor(rootAccountUID: String?) {
+    constructor(rootAccountUID: String) {
         this.rootAccountUID = rootAccountUID
-        init()
-    }
-
-    /**
-     * Initialize default values for the book
-     */
-    private fun init() {
-        rootTemplateUID = generateUID()
-        lastSync = Timestamp(System.currentTimeMillis())
     }
 }

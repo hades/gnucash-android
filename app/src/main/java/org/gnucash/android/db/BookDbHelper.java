@@ -31,6 +31,8 @@ import org.gnucash.android.model.Book;
 
 import java.io.IOException;
 
+import timber.log.Timber;
+
 /**
  * Database helper for managing database which stores information about the books in the application
  * This is a different database from the one which contains the accounts and transaction data because
@@ -61,6 +63,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Timber.i("SQL: %s", BOOKS_TABLE_CREATE);
         db.execSQL(BOOKS_TABLE_CREATE);
 
         Book book = new Book();

@@ -33,7 +33,7 @@ public class DatabaseSchema {
     /**
      * Version number of database containing information about the books in the application
      */
-    public static final int BOOK_DATABASE_VERSION = 1;
+    public static final int BOOK_DATABASE_VERSION = 2;
 
     /**
      * Version number of database containing accounts and transactions info.
