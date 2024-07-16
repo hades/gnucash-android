@@ -39,7 +39,6 @@ import androidx.preference.PreferenceManager;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.databinding.WidgetConfigurationBinding;
-import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
@@ -249,7 +248,8 @@ public class WidgetConfigurationActivity extends Activity {
             return;
         }
 
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(BookDbHelper.getDatabase(bookUID));
+        DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(dbHelper.getWritableDatabase());
 
         final Account account;
         try {
