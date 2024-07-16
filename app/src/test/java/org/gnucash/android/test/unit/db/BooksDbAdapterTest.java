@@ -101,7 +101,7 @@ public class BooksDbAdapterTest {
         assertThat(mBooksDbAdapter.isActive(book2.getUID())).isTrue();
         //setting book2 as active should disable book1 as active
         Book book = mBooksDbAdapter.getRecord(book1.getUID());
-        assertThat(book.isActive()).isFalse();
+        assertThat(book.getActive()).isFalse();
     }
 
     /**

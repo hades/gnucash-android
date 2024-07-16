@@ -75,7 +75,7 @@ class Book : BaseModel {
      * An active book is one whose data is currently displayed in the UI
      */
     @ColumnInfo(name = BookEntry.COLUMN_ACTIVE)
-    var isActive = false
+    var active: Boolean? = null
 
     /**
      * The time of last synchronization of the book

@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.DatabaseSchema.AccountEntry;
@@ -52,7 +53,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> implements Closea
     /**
      * SQLite database
      */
-    protected final SQLiteDatabase mDb;
+    protected final SupportSQLiteDatabase mDb;
 
     protected final String mTableName;
 
@@ -73,7 +74,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> implements Closea
      *
      * @param db SQLiteDatabase object
      */
-    public DatabaseAdapter(SQLiteDatabase db, @NonNull String tableName, @NonNull String[] columns) {
+    public DatabaseAdapter(SupportSQLiteDatabase db, @NonNull String tableName, @NonNull String[] columns) {
         this.mTableName = tableName;
         this.mDb = db;
         this.mColumns = columns;
@@ -83,6 +84,10 @@ public abstract class DatabaseAdapter<Model extends BaseModel> implements Closea
         if (mDb.getVersion() >= 9) {
             createTempView();
         }
+    }
+
+    public DatabaseAdapter(SQLiteDatabase db, @NonNull String tableName, @NonNull String[] columns) {
+        this(SupportSQLiteDatabase(db), tableName, columns);
     }
 
     private void createTempView() {

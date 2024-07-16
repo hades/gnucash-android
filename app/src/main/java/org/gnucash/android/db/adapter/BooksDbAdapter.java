@@ -25,6 +25,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -49,7 +50,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
      *
      * @param db SQLiteDatabase object
      */
-    public BooksDbAdapter(SQLiteDatabase db) {
+    public BooksDbAdapter(SupportSQLiteDatabase db) {
         super(db, BookEntry.TABLE_NAME, new String[]{
                 BookEntry.COLUMN_DISPLAY_NAME,
                 BookEntry.COLUMN_ROOT_GUID,
@@ -99,7 +100,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         stmt.bindString(3, book.getRootTemplateUID());
         if (book.getSourceUri() != null)
             stmt.bindString(4, book.getSourceUri().toString());
-        stmt.bindLong(5, book.isActive() ? 1L : 0L);
+        stmt.bindLong(5, book.getActive() ? 1L : 0L);
         stmt.bindString(6, book.getUID());
         stmt.bindString(7, TimestampHelper.getUtcStringFromTimestamp(book.getLastSync()));
         return stmt;

@@ -36,8 +36,9 @@ import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
-import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.IndexDatabase;
+import org.gnucash.android.db.IndexDatabaseKt;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
@@ -133,8 +134,8 @@ public class GnuCashApplication extends Application {
 
         setUpUserVoice();
 
-        BookDbHelper bookDbHelper = new BookDbHelper(context);
-        mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
+        IndexDatabase booksDb = IndexDatabaseKt.indexDatabaseBuilder(this).build();
+        mBooksDbAdapter = new BooksDbAdapter(booksDb.getOpenHelper().getWritableDatabase());
 
         initializeDatabaseAdapters(context);
         setDefaultCurrencyCode(context, getDefaultCurrencyCode());

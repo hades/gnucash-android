@@ -37,7 +37,7 @@ abstract class BaseModel {
      * @see .setUID
      */
     @ColumnInfo(name = CommonColumns.COLUMN_UID)
-    var _uid: String? = null
+    var _uid: String = ""
 
     /**
      * The timestamp when this model entry was created in the database.
@@ -75,7 +75,7 @@ abstract class BaseModel {
          * @return [uID] String unique ID
          */
         get() {
-            if (_uid == null) {
+            if (_uid == "") {
                 _uid = generateUID()
             }
             return _uid
@@ -86,7 +86,7 @@ abstract class BaseModel {
          * @param uid String unique ID
          */
         set(uid) {
-            _uid = uid
+            _uid = uid ?: ""
         }
 
     /**
