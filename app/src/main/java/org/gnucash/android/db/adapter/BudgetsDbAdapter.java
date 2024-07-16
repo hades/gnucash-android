@@ -28,7 +28,6 @@ import org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
 import org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Recurrence;
 
 import java.util.ArrayList;
@@ -173,24 +172,5 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget> {
         }
         cursor.close();
         return budgets;
-    }
-
-    /**
-     * Returns the sum of the account balances for all accounts in a budget for a specified time period
-     * <p>This represents the total amount spent within the account of this budget in a given period</p>
-     *
-     * @param budgetUID   GUID of budget
-     * @param periodStart Start of the budgeting period in millis
-     * @param periodEnd   End of the budgeting period in millis
-     * @return Balance of all the accounts
-     */
-    public Money getAccountSum(String budgetUID, long periodStart, long periodEnd) {
-        List<BudgetAmount> budgetAmounts = mBudgetAmountsDbAdapter.getBudgetAmountsForBudget(budgetUID);
-        List<String> accountUIDs = new ArrayList<>();
-        for (BudgetAmount budgetAmount : budgetAmounts) {
-            accountUIDs.add(budgetAmount.getAccountUID());
-        }
-
-        return new AccountsDbAdapter(mDb).getAccountsBalance(accountUIDs, periodStart, periodEnd);
     }
 }
