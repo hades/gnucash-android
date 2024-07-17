@@ -23,6 +23,7 @@ import org.gnucash.android.export.ExportParams
 import org.gnucash.android.export.Exporter
 import org.gnucash.android.export.Exporter.ExporterException
 import org.gnucash.android.model.Account
+import org.gnucash.android.model.Account.Companion.convertToOfxAccountType
 import org.gnucash.android.util.PreferencesHelper
 import org.gnucash.android.util.TimestampHelper
 import org.w3c.dom.Document
@@ -36,6 +37,7 @@ import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.StringWriter
 import java.io.Writer
+import java.sql.Timestamp
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
@@ -80,10 +82,79 @@ class OfxExporter(context: Context, params: ExportParams, bookUID: String) :
             }
             .forEach { account ->
                 // Add account details (transactions) to the XML document.
-                account.toOfx(doc, statementTransactionResponse, mExportParams.exportStartTime)
+                accountToOfx(account, doc, statementTransactionResponse, mExportParams.exportStartTime)
                 // Mark as exported.
                 mAccountsDbAdapter.markAsExported(account.uID)
             }
+    }
+
+    /**
+     * Converts an account's transactions into XML and adds them to the DOM document.
+     *
+     * @param doc XML DOM document for the OFX data
+     * @param parent Parent node to which to add this account's transactions in XML
+     * @param exportStartTime Time from which to export transactions which are created/modified after
+     */
+    private fun accountToOfx(account: Account, doc: Document, parent: Element, exportStartTime: Timestamp?) {
+        val currency = doc.createElement(OfxHelper.TAG_CURRENCY_DEF)
+        currency.appendChild(doc.createTextNode(account.commodity.currencyCode))
+
+        //================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
+        val bankId = doc.createElement(OfxHelper.TAG_BANK_ID)
+        bankId.appendChild(doc.createTextNode(OfxHelper.APP_ID))
+        val acctId = doc.createElement(OfxHelper.TAG_ACCOUNT_ID)
+        acctId.appendChild(doc.createTextNode(account.uID))
+        val accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE)
+        val ofxAccountType = convertToOfxAccountType(
+            account.accountType
+        ).toString()
+        accttype.appendChild(doc.createTextNode(ofxAccountType))
+        val bankFrom = doc.createElement(OfxHelper.TAG_BANK_ACCOUNT_FROM)
+        bankFrom.appendChild(bankId)
+        bankFrom.appendChild(acctId)
+        bankFrom.appendChild(accttype)
+
+        //================= END BANK ACCOUNT INFO ============================================
+
+
+        //================= BEGIN ACCOUNT BALANCE INFO =================================
+        val balance = account.balance.toPlainString()
+        val formattedCurrentTimeString = OfxHelper.getFormattedCurrentTime()
+        val balanceAmount = doc.createElement(OfxHelper.TAG_BALANCE_AMOUNT)
+        balanceAmount.appendChild(doc.createTextNode(balance))
+        val dtasof = doc.createElement(OfxHelper.TAG_DATE_AS_OF)
+        dtasof.appendChild(doc.createTextNode(formattedCurrentTimeString))
+        val ledgerBalance = doc.createElement(OfxHelper.TAG_LEDGER_BALANCE)
+        ledgerBalance.appendChild(balanceAmount)
+        ledgerBalance.appendChild(dtasof)
+
+        //================= END ACCOUNT BALANCE INFO =================================
+
+
+        //================= BEGIN TIME PERIOD INFO =================================
+        val dtstart = doc.createElement(OfxHelper.TAG_DATE_START)
+        dtstart.appendChild(doc.createTextNode(formattedCurrentTimeString))
+        val dtend = doc.createElement(OfxHelper.TAG_DATE_END)
+        dtend.appendChild(doc.createTextNode(formattedCurrentTimeString))
+
+        //================= END TIME PERIOD INFO =================================
+
+
+        //================= BEGIN TRANSACTIONS LIST =================================
+        val bankTransactionsList = doc.createElement(OfxHelper.TAG_BANK_TRANSACTION_LIST)
+        bankTransactionsList.appendChild(dtstart)
+        bankTransactionsList.appendChild(dtend)
+        for (transaction in account.transactions) {
+            if (transaction.modifiedTimestamp.before(exportStartTime)) continue
+            bankTransactionsList.appendChild(transaction.toOFX(doc, account.uID!!))
+        }
+        //================= END TRANSACTIONS LIST =================================
+        val statementTransactions = doc.createElement(OfxHelper.TAG_STATEMENT_TRANSACTIONS)
+        statementTransactions.appendChild(currency)
+        statementTransactions.appendChild(bankFrom)
+        statementTransactions.appendChild(bankTransactionsList)
+        statementTransactions.appendChild(ledgerBalance)
+        parent.appendChild(statementTransactions)
     }
 
     /**
