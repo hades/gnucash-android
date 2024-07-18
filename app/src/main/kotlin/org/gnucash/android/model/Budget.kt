@@ -18,72 +18,20 @@ package org.gnucash.android.model
 import org.gnucash.android.model.Money.Companion.zeroInstance
 import org.gnucash.android.model.Money.CurrencyMismatchException
 import org.joda.time.LocalDateTime
-import java.math.BigDecimal
 import timber.log.Timber
+import java.math.BigDecimal
 
 /**
  * Budgets model
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-class Budget : BaseModel {
-    /**
-     * Default constructor
-     */
-    constructor() {
-        //nothing to see here, move along
-    }
-
-    /**
-     * Overloaded constructor.
-     * Initializes the name and amount of this budget
-     *
-     * @param name String name of the budget
-     */
-    constructor(name: String) {
-        this.name = name
-    }
-
-    constructor(name: String, recurrence: Recurrence) {
-        this.name = name
-        this.recurrence = recurrence
-    }
-
-    /**
-     * Returns the name of the budget
-     *
-     * @return name of the budget
-     */
-    var name: String? = null
-        private set
-
-    /**
-     * Sets the name of the budget
-     *
-     * @param name String name of budget
-     */
-    fun setName(name: String) {
-        this.name = name
-    }
+class Budget @JvmOverloads constructor(var name: String, var recurrence: Recurrence? = null) :
+    BaseModel() {
     /**
      * A description of the budget
      */
-    var description: String? = null
-
-    /**
-     * The recurrence for this budget
-     */
-    var recurrence: Recurrence? = null
-        private set
-
-    /**
-     * Set the recurrence pattern for this budget
-     *
-     * @param recurrence Recurrence object
-     */
-    fun setRecurrence(recurrence: Recurrence) {
-        this.recurrence = recurrence
-    }
+    var description: String = ""
 
     private var _budgetAmounts: MutableList<BudgetAmount> = ArrayList()
 
@@ -137,7 +85,7 @@ class Budget : BaseModel {
      * @param periodNum  Budgeting period, zero-based index
      * @return Money amount or zero if no matching [BudgetAmount] is found for the period
      */
-    fun getAmount(accountUID: String, periodNum: Int): Money? {
+    fun getAmount(accountUID: String, periodNum: Int): Money {
         for (budgetAmount in _budgetAmounts) {
             if (budgetAmount.accountUID == accountUID && (budgetAmount.periodNum == periodNum.toLong() || budgetAmount.periodNum == -1L)) {
                 return budgetAmount.amount
@@ -157,7 +105,7 @@ class Budget : BaseModel {
         get() {
             var sum: Money? =
                 null //we explicitly allow this null instead of a money instance,
-                     // because this method should never return null for a budget
+            // because this method should never return null for a budget
             for (budgetAmount in _budgetAmounts) {
                 if (sum == null) {
                     sum = budgetAmount.amount
@@ -171,6 +119,7 @@ class Budget : BaseModel {
             }
             return sum
         }
+
     /**
      * The number of periods covered by this budget
      */

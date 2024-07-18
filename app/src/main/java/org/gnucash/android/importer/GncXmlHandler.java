@@ -377,7 +377,7 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
 
             case GncXmlHelper.TAG_BUDGET:
-                mBudget = new Budget();
+                mBudget = new Budget("");
                 break;
 
             case GncXmlHelper.TAG_GNC_RECURRENCE:
