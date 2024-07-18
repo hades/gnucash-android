@@ -26,18 +26,34 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
      * @param db SQLiteDatabase object
      */
     public CommoditiesDbAdapter(SQLiteDatabase db) {
+        this(db, true);
+    }
+
+    /**
+     * Opens the database adapter with an existing database
+     *
+     * @param db         SQLiteDatabase object
+     * @param initCommon initialize commonly used commodities?
+     */
+    public CommoditiesDbAdapter(SQLiteDatabase db, boolean initCommon) {
         super(db, CommodityEntry.TABLE_NAME, new String[]{
-                CommodityEntry.COLUMN_FULLNAME,
-                CommodityEntry.COLUMN_NAMESPACE,
-                CommodityEntry.COLUMN_MNEMONIC,
-                CommodityEntry.COLUMN_LOCAL_SYMBOL,
-                CommodityEntry.COLUMN_CUSIP,
-                CommodityEntry.COLUMN_SMALLEST_FRACTION,
-                CommodityEntry.COLUMN_QUOTE_FLAG
+            CommodityEntry.COLUMN_FULLNAME,
+            CommodityEntry.COLUMN_NAMESPACE,
+            CommodityEntry.COLUMN_MNEMONIC,
+            CommodityEntry.COLUMN_LOCAL_SYMBOL,
+            CommodityEntry.COLUMN_CUSIP,
+            CommodityEntry.COLUMN_SMALLEST_FRACTION,
+            CommodityEntry.COLUMN_QUOTE_FLAG
         });
-        /**
-         * initialize commonly used commodities
-         */
+        if (initCommon) {
+            initCommon();
+        }
+    }
+
+    /**
+     * initialize commonly used commodities
+     */
+    public void initCommon() {
         Commodity.USD = getCommodity("USD");
         Commodity.EUR = getCommodity("EUR");
         Commodity.GBP = getCommodity("GBP");
@@ -92,7 +108,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
     @Override
     public Cursor fetchAllRecords() {
         return mDb.query(mTableName, null, null, null, null, null,
-                CommodityEntry.COLUMN_FULLNAME + " ASC");
+            CommodityEntry.COLUMN_FULLNAME + " ASC");
     }
 
     /**
@@ -103,7 +119,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
      */
     public Cursor fetchAllRecords(String orderBy) {
         return mDb.query(mTableName, null, null, null, null, null,
-                orderBy);
+            orderBy);
     }
 
     /**
@@ -131,8 +147,8 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
 
     public String getCurrencyCode(@NonNull String guid) {
         Cursor cursor = mDb.query(mTableName, new String[]{CommodityEntry.COLUMN_MNEMONIC},
-                DatabaseSchema.CommonColumns.COLUMN_UID + " = ?", new String[]{guid},
-                null, null, null);
+            DatabaseSchema.CommonColumns.COLUMN_UID + " = ?", new String[]{guid},
+            null, null, null);
         try {
             if (cursor.moveToNext()) {
                 return cursor.getString(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_MNEMONIC));

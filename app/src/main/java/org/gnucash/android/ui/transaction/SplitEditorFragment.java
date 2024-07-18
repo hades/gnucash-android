@@ -277,6 +277,16 @@ public class SplitEditorFragment extends Fragment {
 
             updateTransferAccountsList(binding.inputAccountsSpinner);
 
+            binding.inputAccountsSpinner.setOnItemSelectedListener(new SplitAccountListener(binding.btnSplitType, this));
+            binding.btnSplitType.setAmountFormattingListener(binding.inputSplitAmount, binding.splitCurrencySymbol);
+            binding.btnSplitType.addOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mImbalanceWatcher.afterTextChanged(null);
+                }
+            });
+
+            binding.inputSplitAmount.addTextChangedListener(mImbalanceWatcher);
             if (split != null) {
                 binding.inputSplitAmount.setCommodity(split.getValue().getCommodity());
                 binding.inputSplitAmount.setValue(split.getFormattedValue().asBigDecimal(), true /* isOriginal */);
@@ -292,16 +302,6 @@ public class SplitEditorFragment extends Fragment {
                 binding.splitUid.setText(BaseModel.generateUID());
                 binding.btnSplitType.setChecked(mBaseAmount.signum() > 0);
             }
-
-            binding.inputAccountsSpinner.setOnItemSelectedListener(new SplitAccountListener(binding.btnSplitType, this));
-            binding.btnSplitType.setAmountFormattingListener(binding.inputSplitAmount, binding.splitCurrencySymbol);
-            binding.btnSplitType.addOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mImbalanceWatcher.afterTextChanged(null);
-                }
-            });
-            binding.inputSplitAmount.addTextChangedListener(mImbalanceWatcher);
         }
 
         /**

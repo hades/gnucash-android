@@ -29,8 +29,11 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Commodity;
@@ -39,6 +42,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLDataException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -247,7 +251,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         createDatabaseTables(db);
-
     }
 
     @Override
@@ -257,38 +260,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Timber.i("Upgrading database from version " + oldVersion + " to " + newVersion);
-
-        Toast.makeText(GnuCashApplication.getAppContext(), "Upgrading GnuCash database", Toast.LENGTH_SHORT).show();
-        /*
-         * NOTE: In order to modify the database, create a new static method in the MigrationHelper class
-         * called upgradeDbToVersion<#>, e.g. int upgradeDbToVersion10(SQLiteDatabase) in order to upgrade to version 10.
-         * The upgrade method should return the new (upgraded) database version as the return value.
-         * Then all you need to do is increment the DatabaseSchema.DATABASE_VERSION to the appropriate number to trigger an upgrade.
-         */
-        if (oldVersion > newVersion) {
-            throw new IllegalArgumentException("Database downgrades are not supported at the moment");
-        }
-
-        while (oldVersion < newVersion) {
-            try {
-                Method method = MigrationHelper.class.getDeclaredMethod("upgradeDbToVersion" + (oldVersion + 1), SQLiteDatabase.class);
-                Object result = method.invoke(null, db);
-                oldVersion = Integer.parseInt(result.toString());
-
-            } catch (NoSuchMethodException e) {
-                Timber.e(e, "Database upgrade method upgradeToVersion%d(SQLiteDatabase) definition not found", newVersion);
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                Timber.e(e, "Database upgrade to version %d failed. The upgrade method is inaccessible", newVersion);
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                Timber.e(e);
-                throw new RuntimeException(e.getTargetException());
-            }
-        }
-    }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
 
     /**
@@ -307,7 +279,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(RECURRENCE_TABLE_CREATE);
         db.execSQL(BUDGETS_TABLE_CREATE);
         db.execSQL(BUDGET_AMOUNTS_TABLE_CREATE);
-
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
                 + AccountEntry.TABLE_NAME + "(" + AccountEntry.COLUMN_UID + ")";
@@ -349,8 +320,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             MigrationHelper.importCommodities(db);
         } catch (SAXException | ParserConfigurationException | IOException e) {
-            Timber.e(e, "Error loading currencies into the database");
-            throw new RuntimeException(e);
+            String msg = "Error loading currencies into the database";
+            Timber.e(e, msg);
+            throw new SQLiteException(msg, e);
         }
+    }
+
+    /**
+     * Escape the given argument for use in a {@code LIKE} statement.
+     * @hide
+     */
+    public static String escapeForLike(@NonNull String arg) {
+        // Shamelessly borrowed from com.android.providers.media.util.DatabaseUtils
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arg.length(); i++) {
+            final char c = arg.charAt(i);
+            switch (c) {
+                case '%': sb.append('\\');
+                    break;
+                case '_': sb.append('\\');
+                    break;
+            }
+            sb.append(c);
+        }
+        return sb.toString();
     }
 }

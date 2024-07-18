@@ -44,17 +44,16 @@ public class CommoditiesXmlHandler extends DefaultHandler {
      * List of commodities parsed from the XML file.
      * They will be all added to db at once at the end of the document
      */
-    private List<Commodity> mCommodities;
+    private final List<Commodity> mCommodities = new ArrayList<>();
 
-    private CommoditiesDbAdapter mCommoditiesDbAdapter;
+    private final CommoditiesDbAdapter mCommoditiesDbAdapter;
 
     public CommoditiesXmlHandler(SQLiteDatabase db) {
         if (db == null) {
             mCommoditiesDbAdapter = GnuCashApplication.getCommoditiesDbAdapter();
         } else {
-            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
+            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db, false);
         }
-        mCommodities = new ArrayList<>();
     }
 
     @Override
@@ -83,5 +82,6 @@ public class CommoditiesXmlHandler extends DefaultHandler {
     @Override
     public void endDocument() throws SAXException {
         mCommoditiesDbAdapter.bulkAddRecords(mCommodities, DatabaseAdapter.UpdateMethod.insert);
+        mCommoditiesDbAdapter.initCommon();
     }
 }
