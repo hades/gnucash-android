@@ -167,7 +167,7 @@ public class StackedBarChartFragment extends BaseReportFragment {
             List<Float> stack = new ArrayList<>();
             for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
                 if (account.getAccountType() == mAccountType
-                        && !account.isPlaceholderAccount()
+                        && !account.isPlaceholder()
                         && account.getCommodity().equals(mCommodity)) {
 
                     double balance = mAccountsDbAdapter.getAccountsBalance(

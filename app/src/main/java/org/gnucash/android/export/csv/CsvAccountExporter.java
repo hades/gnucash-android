@@ -100,7 +100,7 @@ public class CsvAccountExporter extends Exporter {
                 csvWriter.writeToken(account.isHidden() ? "T" : "F");
 
                 csvWriter.writeToken("F"); //Tax
-                csvWriter.writeEndToken(account.isPlaceholderAccount() ? "T" : "F");
+                csvWriter.writeEndToken(account.isPlaceholder() ? "T" : "F");
             }
         } catch (IOException e) {
             Timber.e(e);

@@ -156,7 +156,7 @@ public class PieChartFragment extends BaseReportFragment {
         List<Integer> colors = new ArrayList<>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == mAccountType
-                    && !account.isPlaceholderAccount()
+                    && !account.isPlaceholder()
                     && account.getCommodity().equals(mCommodity)) {
 
                 float balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),

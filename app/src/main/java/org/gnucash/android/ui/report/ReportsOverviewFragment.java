@@ -180,7 +180,7 @@ public class ReportsOverviewFragment extends BaseReportFragment {
         List<Integer> colors = new ArrayList<>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == AccountType.EXPENSE
-                    && !account.isPlaceholderAccount()
+                    && !account.isPlaceholder()
                     && account.getCommodity().equals(mCommodity)) {
 
                 long start = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();

@@ -530,7 +530,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SLOT_VALUE:
                 if (mInPlaceHolderSlot) {
                     //Timber.v("Setting account placeholder flag");
-                    mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
+                    mAccount.setPlaceholder(Boolean.parseBoolean(characterString));
                     mInPlaceHolderSlot = false;
                 } else if (mInColorSlot) {
                     //Timber.d("Parsing color code: " + characterString);

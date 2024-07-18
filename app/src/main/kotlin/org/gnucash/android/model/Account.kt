@@ -33,7 +33,7 @@ import org.gnucash.android.util.parseColor
  * @author Ngewi Fet <ngewif@gmail.com>
  * @see AccountType
  */
-class Account : BaseModel {
+class Account @JvmOverloads constructor(var name: String, var commodity: Commodity = Commodity.DEFAULT_COMMODITY) : BaseModel() {
     /**
      * Accounts types which are used by the OFX standard
      */
@@ -42,26 +42,15 @@ class Account : BaseModel {
     }
 
     /**
-     * Name of this account
-     */
-    var name: String? = null
-        private set
-
-    /**
      * Fully qualified name of this account including the parent hierarchy.
      * On instantiation of an account, the full name is set to the name by default
      */
-    var fullName: String?
+    var fullName: String = name
 
     /**
      * Account description
      */
-    var description: String? = ""
-
-    /**
-     * Commodity used by this account
-     */
-    private var _commodity: Commodity? = null
+    var description: String = ""
 
     /**
      * Type of account
@@ -83,13 +72,13 @@ class Account : BaseModel {
      * Save UID of a default account for transfers.
      * All transactions in this account will by default be transfers to the other account
      */
-    private var _defaultTransferAccountUID: String? = null
+    var defaultTransferAccountUID: String? = null
 
     /**
      * Flag for placeholder accounts.
      * These accounts cannot have transactions
      */
-    private var _isPlaceholderAccount = false
+    var isPlaceholder = false
 
     /**
      * `true` if this account is flagged as a favorite account, `false` if not
@@ -99,40 +88,7 @@ class Account : BaseModel {
     /**
      * Flag which indicates if this account is a hidden account or not
      */
-    private var _isHidden = false
-
-    /**
-     * Constructor
-     * Creates a new account with the default currency and a generated unique ID
-     *
-     * @param name Name of the account
-     */
-    constructor(name: String) {
-        setName(name)
-        fullName = this.name
-        commodity = Commodity.DEFAULT_COMMODITY
-    }
-
-    /**
-     * Overloaded constructor
-     *
-     * @param name      Name of the account
-     * @param commodity [Commodity] to be used by transactions in this account
-     */
-    constructor(name: String, commodity: Commodity) {
-        setName(name)
-        fullName = this.name
-        this.commodity = commodity
-    }
-
-    /**
-     * Sets the name of the account
-     *
-     * @param name String name of the account
-     */
-    fun setName(name: String) {
-        this.name = name.trim { it <= ' ' }
-    }
+    var isHidden = false
 
     /**
      * Adds a transaction to this account
@@ -221,75 +177,6 @@ class Account : BaseModel {
             return
         }
         color = parseColor(colorCode) ?: DEFAULT_COLOR
-    }
-
-    //todo: should we also change commodity of transactions? Transactions can have splits from different accounts
-    /**
-     * The commodity for this account
-     */
-    var commodity: Commodity
-        get() = _commodity!!
-        set(value) {
-            _commodity = value
-        }
-
-    /**
-     * Returns `true` if this account is a placeholder account, `false` otherwise.
-     *
-     * @return `true` if this account is a placeholder account, `false` otherwise
-     */
-    fun isPlaceholderAccount(): Boolean {
-        return _isPlaceholderAccount
-    }
-
-    /**
-     * Returns the hidden property of this account.
-     *
-     * Hidden accounts are not visible in the UI
-     *
-     * @return `true` if the account is hidden, `false` otherwise.
-     */
-    fun isHidden(): Boolean {
-        return _isHidden
-    }
-
-    /**
-     * Toggles the hidden property of the account.
-     *
-     * Hidden accounts are not visible in the UI
-     *
-     * @param hidden boolean specifying is hidden or not
-     */
-    fun setHidden(hidden: Boolean) {
-        _isHidden = hidden
-    }
-
-    /**
-     * Sets the placeholder flag for this account.
-     * Placeholder accounts cannot have transactions
-     *
-     * @param isPlaceholder Boolean flag indicating if the account is a placeholder account or not
-     */
-    fun setPlaceHolderFlag(isPlaceholder: Boolean) {
-        _isPlaceholderAccount = isPlaceholder
-    }
-
-    /**
-     * Return the unique ID of accounts to which to default transfer transactions to
-     *
-     * @return Unique ID string of default transfer account
-     */
-    fun getDefaultTransferAccountUID(): String? {
-        return _defaultTransferAccountUID
-    }
-
-    /**
-     * Set the unique ID of account which is the default transfer target
-     *
-     * @param defaultTransferAccountUID Unique ID string of default transfer account
-     */
-    fun setDefaultTransferAccountUID(defaultTransferAccountUID: String?) {
-        _defaultTransferAccountUID = defaultTransferAccountUID
     }
 
     companion object {
