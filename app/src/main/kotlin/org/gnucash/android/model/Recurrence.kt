@@ -36,16 +36,17 @@ import org.joda.time.format.DateTimeFormat
  *
  * Basically a wrapper around [PeriodType]
  */
-class Recurrence(periodType: PeriodType) : BaseModel() {
+class Recurrence(
     /**
      * Return the [PeriodType] for this recurrence
      */
     var periodType: PeriodType
+) : BaseModel() {
 
     /**
      * Timestamp of start of recurrence
      */
-    var periodStart: Timestamp
+    var periodStart: Timestamp = Timestamp(System.currentTimeMillis())
 
     /**
      * End date of the recurrence period
@@ -63,11 +64,6 @@ class Recurrence(periodType: PeriodType) : BaseModel() {
      * e.g. bi-weekly actions have period type [PeriodType.WEEK] and multiplier 2.
      */
     var multiplier = 1 //multiplier for the period type
-
-    init {
-        this.periodType = periodType
-        periodStart = Timestamp(System.currentTimeMillis())
-    }
 
     /**
      * Returns an approximate period for this recurrence
